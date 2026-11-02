@@ -34,6 +34,9 @@ Final Answer ← Generate → IsSUP → IsUSE
 SQLite Checkpoint / Memory
 ```
 
+## workflow
+<img width="1536" height="1024" alt="architecture_diagram" src="https://github.com/user-attachments/assets/957a8a53-129a-4539-90f9-38ed9ffebb82" />
+
 ## Tech stack
 
 - **LangGraph** — Self-RAG workflow, conditional routing, persistent thread state
@@ -215,39 +218,3 @@ For the second message, the `contextualize` node uses the persisted incident con
 
 SQLite is intentionally used for the local demonstration. In a production implementation, you can explain that this persistence layer can be replaced with PostgreSQL or another production-grade LangGraph checkpointer/database.
 
-## Recommended YouTube flow
-
-### Demo A — Existing Pinecone knowledge
-
-Ask:
-
-> Our checkout API is returning 502 errors after deployment. What should the on-call engineer check first?
-
-Expected route: **Private Runbooks**.
-
-### Demo B — Persistent memory
-
-Immediately ask:
-
-> What should I check next if that does not work?
-
-The same `thread_id` should reuse the previous incident context.
-
-### Demo C — Upload new operational knowledge
-
-Upload a new PDF/MD/DOCX from the UI. The status will show how many chunks were added to the existing namespace. Then ask a question whose answer exists only in the newly uploaded document.
-
-### Demo D — Internet-search fallback
-
-Ask about a technical issue that is not covered by any private runbook. Self-RAG first tries the private KB, grades the evidence, rewrites if necessary, and then transitions to **Internet Search** when internal evidence remains insufficient.
-
-## Important configuration rule
-
-The application and ingestion script both import `src/vectorstore.py`. That means they always use the same:
-
-- OpenAI embedding model
-- embedding dimension
-- Pinecone index
-- Pinecone namespace
-
-This prevents a common RAG mistake where offline ingestion and runtime retrieval use different embeddings or different namespaces.
